@@ -1,0 +1,37 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='palm-detection-switch-git'
+pkgver=r2.c6f1946  # Set an appropriate initial version
+pkgrel=1
+pkgdesc="A script to shutdown your computer when a USB is plugged or unplugged.."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/usbkill"
+license=('MIT')
+depends=('python' 'python-setuptools')
+makedepends=('git')
+#optdepends=('')
+source=("$pkgname::git+https://github.com/jefrecantuledesma/palm-detection-switch")  # Include the pyproject.toml file in the source array
+md5sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/palm-detection-switch-git"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd "$srcdir/palm-detection-switch-git"
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$(pkgver)
+    python -m build
+}
+
+package() {
+    cd "$srcdir/palm-detection-switch-git"
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$(pkgver)
+    python -m installer --destdir="${pkgdir}" dist/*.whl
+    
+    # Ensure the /usr/bin/ directory exists
+    install -d "$pkgdir/usr/bin/"
+    
+    # Install the binary
+    install -m755 "$srcdir/palm-detection-switch-git/main.py" "$pkgdir/usr/bin/palm-detection-switch"
+}
+

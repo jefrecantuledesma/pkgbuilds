@@ -1,0 +1,29 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='cli-timer-git'
+pkgver=r6.1d4d041
+pkgrel=1
+pkgdesc="A simple timer"
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/cli-timer"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=('mako: Supports notifications.')
+source=("$pkgname::git+https://github.com/jefrecantuledesma/cli-timer.git")
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/cli-timer-git"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/cli-timer-git"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/cli-timer-git"
+	install -Dm755 target/release/cli-timer "$pkgdir/usr/bin/cli-timer"
+	cargo clean
+}

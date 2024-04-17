@@ -1,0 +1,44 @@
+pkgname=seamonkey-bin
+pkgver=2.53.18.2
+pkgrel=1
+pkgdesc="SeaMonkey Internet Suite"
+arch=('x86_64')
+url="https://www.seamonkey-project.org/"
+license=('MPL')
+depends=('gtk3' 'dbus-glib' 'nss' 'libxt')
+optdepends=('networkmanager: for managing network connections'
+            'pulseaudio: for sound support'
+            'alsa-lib: for sound support'
+            'libnotify: for desktop notifications')
+provides=("seamonkey=${pkgver}")
+conflicts=('seamonkey')
+source=("https://archive.seamonkey-project.org/releases/2.53.18.2/linux-x86_64/en-US/seamonkey-2.53.18.2.en-US.linux-x86_64.tar.bz2")
+md5sums=('4bc62b423a93417b72d0b94e0397e5b6')
+
+package() {
+  # Install SeaMonkey in /opt
+  install -d "${pkgdir}/opt/"
+  cp -a "${srcdir}/seamonkey" "${pkgdir}/opt/"
+
+  # Create symlinks for the SeaMonkey binary
+  install -d "${pkgdir}/usr/bin"
+  ln -s "/opt/seamonkey/seamonkey" "${pkgdir}/usr/bin/seamonkey"
+  chmod +x "${pkgdir}/usr/bin/seamonkey"
+
+  # Correctly create a desktop entry for SeaMonkey
+  install -d "${pkgdir}/usr/share/applications"
+  echo "[Desktop Entry]
+Type=Application
+Name=SeaMonkey
+Exec=/usr/bin/seamonkey
+Icon=/opt/seamonkey/chrome/icons/default/default48.png
+Terminal=false
+Categories=Utility" > "${pkgdir}/usr/share/applications/seamonkey.desktop"
+}
+
+post_install() {
+    echo "To add SeaMonkey to your application launcher, please run the following command:"
+    mkdir -p "~/.local/share/applications" && cp "/usr/share/applications/seamonkey.desktop" "~/.local/share/applications/"
+}
+
+

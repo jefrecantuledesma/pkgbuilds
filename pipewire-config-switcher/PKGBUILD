@@ -1,0 +1,37 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='pipewire-eq-switcher'
+pkgver=r15.9dcddc6  # Set an appropriate initial version
+pkgrel=1
+pkgdesc="A script to swap EQs for PipeWire."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/pipewire-eq-switcher"
+license=('MIT')
+depends=('python' 'pipewire' 'python-pyudev' 'python-setuptools')
+makedepends=('git')
+#optdepends=('')
+source=("$pkgname::git+https://github.com/jefrecantuledesma/pipewire-eq-switcher.git")  # Include the pyproject.toml file in the source array
+md5sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/pipewire-eq-switcher"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd "$srcdir/pipewire-eq-switcher"
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$(pkgver)
+    python -m build
+}
+
+package() {
+    cd "$srcdir/pipewire-eq-switcher"
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$(pkgver)
+    python -m installer --destdir="${pkgdir}" dist/*.whl
+
+    # Ensure the /usr/bin/ directory exists
+    install -d "$pkgdir/usr/bin/"
+    
+    # Install the binary to the /usr/bin/ directory
+    install -m755 "$srcdir/pipewire-eq-switcher/main.py" "$pkgdir/usr/bin/pipewire-eq-switcher"
+}
+

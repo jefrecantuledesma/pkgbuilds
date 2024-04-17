@@ -1,0 +1,40 @@
+pkgname=surge-xt-bin
+pkgver=1.3.1
+pkgrel=1
+pkgdesc="Subtractive synthesizer."
+arch=('x86_64')
+url="https://surge-synthesizer.github.io/"
+license=('GPL3')
+depends=('gtk3' 'dbus-glib' 'nss' 'libxt')
+optdepends=('networkmanager: for managing network connections'
+            'pulseaudio: for sound support'
+            'alsa-lib: for sound support'
+            'libnotify: for desktop notifications')
+provides=("surge-xt-bin=${pkgver}")
+conflicts=('surge-xt-git')
+source=("https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.1/surge-xt-linux-x64-1.3.1.deb")
+md5sums=('a744e262a4d49715c277b908a479ba5a')
+sha512sums=('ce48c6f4adb898aae32030323288d62e6804dcec40c50a3f272db2a078d04388b7bb67b19bb6aa27b7efbd423a38e53800ba397154df9de597a168d330903206')
+
+prepare() {
+  ar p surge-xt-linux-x64-1.3.1.deb data.tar.xz | tar -xJ
+}
+
+package() {
+    cd "$srcdir"
+    # Copy the binary files
+    install -Dm755 usr/bin/* -t "$pkgdir/usr/bin/"
+    # Copy libraries
+    cp -dr --no-preserve=ownership usr/lib "$pkgdir/usr/"
+    # Copy shared resources
+    cp -dr --no-preserve=ownership usr/share "$pkgdir/usr/"
+    # Install desktop files and icons
+    install -Dm644 usr/share/applications/*.desktop -t "$pkgdir/usr/share/applications/"
+    cp -dr --no-preserve=ownership usr/share/icons "$pkgdir/usr/share/"
+}
+
+post_install() {
+    gtk-update-icon-cache -qtf "$pkgdir/usr/share/icons/hicolor"
+    update-desktop-database -q "$pkgdir/usr/share/applications"
+}
+

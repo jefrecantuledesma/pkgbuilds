@@ -1,0 +1,29 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='screen-share-git'
+pkgver=r6.52c41c0
+pkgrel=1
+pkgdesc="Automatically starts a virtual video device of your screen."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/screen-share"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/screen-share.git")
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/screen-share-git"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/screen-share-git"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/screen-share-git"
+	install -Dm755 target/release/screen-share "$pkgdir/usr/bin/screen-share"
+	cargo clean
+}
