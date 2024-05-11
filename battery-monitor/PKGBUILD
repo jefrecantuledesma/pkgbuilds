@@ -1,0 +1,29 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='battery-monitor'
+pkgver=r2.e9e50d3
+pkgrel=1
+pkgdesc="Hibernates instead of powers-off"
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/battery-monitor"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/battery-monitor.git")
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/battery-monitor"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/battery-monitor"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/battery-monitor"
+	install -Dm755 target/release/battery-monitor "$pkgdir/usr/bin/battery-monitor"
+	cargo clean
+}
