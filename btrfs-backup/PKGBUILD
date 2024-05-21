@@ -1,0 +1,29 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='btrfs-backup'
+pkgver=r2.a579c1e
+pkgrel=1
+pkgdesc="A home and root btrfs snapshot tool."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/btrfs-backup"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git' 'btrfs-progs')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/btrfs-backup.git")
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/btrfs-backup"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/btrfs-backup"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/btrfs-backup"
+	install -Dm755 target/release/btrfs-backup "$pkgdir/usr/bin/btrfs-backup"
+	cargo clean
+}
