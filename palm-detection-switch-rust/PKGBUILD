@@ -1,6 +1,6 @@
 # Maintainer: Samuel Biby <sbiby@gmu.edu>
 pkgname='palm-detection-switch-git'
-pkgver=r3.92a5c26
+pkgver=r4.d725003
 pkgrel=1
 pkgdesc="A simple tool to switch palm detection"
 arch=('x86_64')
@@ -10,7 +10,7 @@ depends=()
 makedepends=('cargo' 'git')
 optdepends=()
 source=("$pkgname::git+https://github.com/jefrecantuledesma/palm-detection-switch.git")
-md5sums=('SKIP')
+sha256sums=('SKIP')
 
 pkgver() {
 	cd "$srcdir/palm-detection-switch-git"
@@ -25,5 +25,6 @@ build() {
 package() {
 	cd "$srcdir/palm-detection-switch-git"
 	install -Dm755 target/release/palm_detection_switch "$pkgdir/usr/bin/palm-detection-switch"
-	cargo clean
+	strip "$pkgdir/usr/bin/palm-detection-switch"
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
