@@ -1,0 +1,29 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='sway-scale-switcher-git'
+pkgver=r2.699f0dc
+pkgrel=1
+pkgdesc="Switches between preconfigured scale values for Sway."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/sway-scale-switcher"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/sway-scale-switcher.git")
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/sway-scale-switcher-git"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/sway-scale-switcher-git"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/sway-scale-switcher-git"
+	install -Dm755 target/release/sway-scale-switcher "$pkgdir/usr/bin/sway-scale-switcher"
+	cargo clean
+}
