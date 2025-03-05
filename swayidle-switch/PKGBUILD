@@ -1,0 +1,30 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='swayidle-switch-git'
+pkgver=r4.497b9f3
+pkgrel=1
+pkgdesc="A simple script to toggle swayidle."
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/swayidle-switch"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/swayidle-switch.git")
+sha256sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/swayidle-switch-git"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/swayidle-switch-git"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/swayidle-switch-git"
+	install -Dm755 target/release/swayidle_switch "$pkgdir/usr/bin/swayidle-switch"
+	strip "$pkgdir/usr/bin/swayidle-switch"
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
