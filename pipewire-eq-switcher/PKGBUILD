@@ -1,0 +1,30 @@
+# Maintainer: Samuel Biby <sbiby@gmu.edu>
+pkgname='pipewire-eq-switcher-git'
+pkgver=r4.ff2fdfd
+pkgrel=1
+pkgdesc="A simple tool to switch Pipewire EQs"
+arch=('x86_64')
+url="https://github.com/jefrecantuledesma/pipewire-eq-switcher"
+license=('MIT')
+depends=()
+makedepends=('cargo' 'git')
+optdepends=()
+source=("$pkgname::git+https://github.com/jefrecantuledesma/pipewire-eq-switcher.git")
+sha256sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/pipewire-eq-switcher-git"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd "$srcdir/pipewire-eq-switcher-git"
+	cargo build --release
+}
+
+package() {
+	cd "$srcdir/pipewire-eq-switcher-git"
+	install -Dm755 target/release/pipewire-eq-switcher "$pkgdir/usr/bin/pipewire-eq-switcher"
+	strip "$pkgdir/usr/bin/pipewire-eq-switcher"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"	
+}
